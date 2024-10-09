@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Project;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,11 +13,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Cria 200 usuários
+        User::factory()->count(200)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Cria 50 projetos aleatoriamente (não associando diretamente aos usuários)
+        Project::factory()->count(50)->create();
+        
+        // Seleciona 50 usuários aleatórios e cria um projeto para cada um
+        User::query()->inRandomOrder()->limit(50)->get()
+            ->each(function (User $u) {
+                Project::factory()->create(['created_by' => $u->id]);
+            });
     }
 }
